@@ -5,7 +5,7 @@
 #-------------------
 
 # The image argument needs to be placed on top
-ARG BASE_IMAGE
+ARG BASE_IMAGE=alpine:latest
 
 # Build args
 ARG BUILD_TYPE="download"
@@ -153,8 +153,14 @@ COPY --chmod=755 install-java/alpine "$SECHUB_FOLDER/install-java/"
 #RUN cd "$SECHUB_FOLDER/install-java/" && \
 #    ./install-java.sh "$JAVA_DISTRIBUTION" "$JAVA_VERSION" jre
 
-COPY copy/temurin-17-jre-17.0.5_p8-r0.apk /temurin-17-jre-17.0.5_p8-r0.apk
-RUN apk add --allow-untrusted /temurin-17-jre-17.0.5_p8-r0.apk
+ARG TEMURIN_MAJOR_VERSION=17
+ARG TEMURIN_FULL_VERSION=17.0.6_p10-r0
+ARG TEMURIN_TYPE=jre
+COPY copy/temurin-${TEMURIN_MAJOR_VERSION}-${TEMURIN_FULL_VERSION}.apk /temurin-${TEMURIN_MAJOR_VERSION}-${TEMURIN_FULL_VERSION}.apk
+COPY copy/temurin-${TEMURIN_MAJOR_VERSION}-${TEMURIN_TYPE}-${TEMURIN_FULL_VERSION}.apk /temurin-${TEMURIN_MAJOR_VERSION}-${TEMURIN_TYPE}-${TEMURIN_FULL_VERSION}.apk
+RUN apk add --allow-untrusted \
+    /temurin-${TEMURIN_MAJOR_VERSION}-${TEMURIN_TYPE}-${TEMURIN_FULL_VERSION}.apk \
+    /temurin-${TEMURIN_MAJOR_VERSION}-${TEMURIN_FULL_VERSION}.apk
 
 # Copy run script into container
 COPY run.sh /run.sh
